@@ -76,17 +76,17 @@ WSGI_APPLICATION = 'djangoexample.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 if os.getenv('GAE_APPLICATION', None) or os.getenv('CLOUD_BUILD', None):
     datastore_client = datastore.Client()
-    db_kind = 'Database'
+    DB_SETTINGS = datastore_client.key('Settings', 'Database')
 
     # Running on production App Engine, so connect to Google Cloud SQL using
     # the unix socket at /cloudsql/<your-cloudsql-connection string>
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': datastore_client.key(db_kind, 'Host'),
-            'USER': datastore_client.key(db_kind, 'User'),
-            'PASSWORD': datastore_client.key(db_kind, 'Password'),
-            'NAME': datastore_client.key(db_kind, 'Name'),
+            'HOST': DB_SETTINGS['Host'],
+            'USER': DB_SETTINGS['User'],
+            'PASSWORD': DB_SETTINGS['Password'],
+            'NAME': DB_SETTINGS['Name'],
         }
     }
 else:
