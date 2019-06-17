@@ -11,6 +11,27 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from google.appengine.ext import ndb
+
+class Settings(ndb.Model):
+  name = ndb.StringProperty()
+  value = ndb.StringProperty()
+
+  @staticmethod
+  def get(name):
+    NOT_SET_VALUE = "NOT SET"
+    retval = Settings.query(Settings.name == name).get()
+    if not retval:
+      retval = Settings()
+      retval.name = name
+      retval.value = NOT_SET_VALUE
+      retval.put()
+    if retval.value == NOT_SET_VALUE:
+      raise Exception(('Setting %s not found in the database. A placeholder ' +
+        'record has been created. Go to the Developers Console for your app ' +
+        'in App Engine, look up the Settings record with name=%s and enter ' +
+        'its value in that record\'s value field.') % (name, name))
+    return retval.value
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -72,18 +93,29 @@ WSGI_APPLICATION = 'djangoexample.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-DATABASES = {
-    'default': {
-        # If you are using Cloud SQL for MySQL rather than PostgreSQL, set
-        # 'ENGINE': 'django.db.backends.mysql' instead of the following.
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT'),
+if os.getenv('GAE_APPLICATION', None):
+    # Running on production App Engine, so connect to Google Cloud SQL using
+    # the unix socket at /cloudsql/<your-cloudsql-connection string>
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': Settings.get('DB_HOST'),
+            'USER': Settings.get('DB_USER'),
+            'PASSWORD': Settings.get('DB_PASSWORD'),
+            'NAME': Settings.get('DB_NAME'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'django_example',
+            'USER': 'postgres',
+            'PASSWORD': 'postgres',
+            'HOST': '127.0.0.1',
+            'port': '5432'
+        }
+    }
 
 
 # Password validation
