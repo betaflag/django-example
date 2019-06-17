@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'djangoexample.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 if os.getenv('GAE_APPLICATION', None):
     datastore_client = datastore.Client()
-    db_kind = 'Database'`
+    db_kind = 'Database'
 
     # Running on production App Engine, so connect to Google Cloud SQL using
     # the unix socket at /cloudsql/<your-cloudsql-connection string>
