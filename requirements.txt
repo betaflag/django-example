@@ -11,6 +11,7 @@ googleapis-common-protos==1.6.0
 grpcio==1.21.1
 gunicorn==19.9.0
 idna==2.8
+mysqlclient==1.4.2.post1
 protobuf==3.8.0
 psycopg2==2.8.3
 pyasn1==0.4.5
