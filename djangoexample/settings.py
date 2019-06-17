@@ -11,27 +11,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-from google.appengine.ext import ndb
 
-class Settings(ndb.Model):
-  name = ndb.StringProperty()
-  value = ndb.StringProperty()
-
-  @staticmethod
-  def get(name):
-    NOT_SET_VALUE = "NOT SET"
-    retval = Settings.query(Settings.name == name).get()
-    if not retval:
-      retval = Settings()
-      retval.name = name
-      retval.value = NOT_SET_VALUE
-      retval.put()
-    if retval.value == NOT_SET_VALUE:
-      raise Exception(('Setting %s not found in the database. A placeholder ' +
-        'record has been created. Go to the Developers Console for your app ' +
-        'in App Engine, look up the Settings record with name=%s and enter ' +
-        'its value in that record\'s value field.') % (name, name))
-    return retval.value
+from google.cloud import datastore
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -94,15 +75,18 @@ WSGI_APPLICATION = 'djangoexample.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 if os.getenv('GAE_APPLICATION', None):
+    datastore_client = datastore.Client()
+    db_kind = 'Database'`
+
     # Running on production App Engine, so connect to Google Cloud SQL using
     # the unix socket at /cloudsql/<your-cloudsql-connection string>
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': Settings.get('DB_HOST'),
-            'USER': Settings.get('DB_USER'),
-            'PASSWORD': Settings.get('DB_PASSWORD'),
-            'NAME': Settings.get('DB_NAME'),
+            'HOST': datastore_client.key(db_kind, 'Host'),
+            'USER': datastore_client.key(db_kind, 'User'),
+            'PASSWORD': datastore_client.key(db_kind, 'Password'),
+            'NAME': datastore_client.key(db_kind, 'Name'),
         }
     }
 else:
