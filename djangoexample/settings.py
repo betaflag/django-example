@@ -74,7 +74,7 @@ WSGI_APPLICATION = 'djangoexample.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-if os.getenv('GAE_APPLICATION', None):
+if os.getenv('GAE_APPLICATION', None) or os.getenv('CLOUD_BUILD', None):
     datastore_client = datastore.Client()
     db_kind = 'Database'
 
