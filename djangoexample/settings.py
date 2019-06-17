@@ -25,7 +25,7 @@ SECRET_KEY = 'mm1put0=)q_#!daglv#2o^m3nfhldfepc05*#(m7vp*@j_nll-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['http://django-example-244011.appspot.com/']
 
 
 # Application definition
