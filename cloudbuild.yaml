@@ -1,4 +1,8 @@
 steps:
+  - id: migrate
+    name: "python:3.7"
+    entrypoint: "bash"
+    args: ["./migrate.sh"]
   - id: deploy
     name: "gcr.io/cloud-builders/gcloud"
     args: ["app", "deploy"]
