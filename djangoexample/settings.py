@@ -100,7 +100,7 @@ elif os.getenv('CLOUD_BUILD', None):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': '127.0.0.1',
+            'HOST': 'localhost',
             'USER': DB_SETTINGS['User'],
             'PASSWORD': DB_SETTINGS['Password'],
             'NAME': DB_SETTINGS['Name'],
