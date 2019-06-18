@@ -4,6 +4,12 @@ steps:
     entrypoint: "bash"
     args: ["./migrate.sh"]
     env: ["CLOUD_BUILD=1"]
+    waitFor: ["-"]
   - id: deploy
     name: "gcr.io/cloud-builders/gcloud"
-    args: ["app", "deploy"]
+    args: ["app", "deploy", "--no-promote", "--version=$SHORT_SHA"]
+    waitFor: ["-"]
+  - id: promote
+    name: "gcr.io/cloud-builders/gcloud"
+    waitFor: ["migrate", "deploy"]
+    args: ["app", "deploy", "--promote", "--version=$SHORT_SHA"]
