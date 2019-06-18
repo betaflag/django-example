@@ -3,7 +3,11 @@ steps:
     name: "python:3.7"
     entrypoint: "bash"
     args: ["./migrate.sh"]
-    env: ["CLOUD_BUILD=1"]
+    env:
+      [
+        "CLOUD_BUILD=1",
+        "CLOUDSQL_INSTANCE=django-example-244011:us-east1:django-example",
+      ]
     waitFor: ["-"]
   - id: deploy
     name: "gcr.io/cloud-builders/gcloud"
